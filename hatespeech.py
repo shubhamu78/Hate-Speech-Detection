@@ -163,3 +163,29 @@ submission = test[['id','label']]
 submission.to_csv('sub_lreg_bow.csv', index=False) # writing data to a CSV file
 
 
+//TFIDF
+train_tfidf = tfidf[:31962,:]
+test_tfidf = tfidf[31962:,:]
+
+xtrain_tfidf = train_tfidf[ytrain.index]
+xvalid_tfidf = train_tfidf[yvalid.index]
+
+lreg.fit(xtrain_tfidf, ytrain)
+
+prediction = lreg.predict_proba(xvalid_tfidf)
+prediction_int = prediction[:,1] >= 0.3
+prediction_int = prediction_int.astype(np.int)
+
+print(f1_score(yvalid, prediction_int))
+print(accuracy_score(yvalid, prediction_int))
+
+
+test_pred = lreg.predict_proba(test_tfidf)
+test_pred_int = test_pred[:,1] >= 0.3
+test_pred_int = test_pred_int.astype(np.int)
+
+test['label'] = test_pred_int
+submission = test[['id','label']]
+submission.to_csv('sub_lreg_tfidf.csv', index=False) # writing data to a CSV file
+
+
